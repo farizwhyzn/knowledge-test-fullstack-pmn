@@ -11,22 +11,34 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
+import {toast} from "sonner";
+import { useRouter } from 'next/navigation'
+import { useSession } from "next-auth/react";
+
 
 
 export default function Register() {
+    const router = useRouter();
+    const session = useSession();
     const [data, setData] = useState({
         name: "",
         email: "",
         password: "",
     })
 
+    useEffect(() => {
+        if (session?.status === 'authenticated') {
+            router.push('/')
+        }
+    })
+
     const registerUser = async (e) => {
         e.preventDefault()
         axios.post("/api/register", data)
-            .then(() => alert("User created successfully"))
-            .catch(() => alert("An error occurred"))
+            .then(() => toast.success("Account created successfully"))
+            .catch(() => toast.error("An error occurred while creating your account"))
     }
 
     return (
